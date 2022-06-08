@@ -34,6 +34,10 @@ type Limit struct {
 	Links map[string]interface{} `json:"links"`
 }
 
+type LimitsOutput struct {
+	Limits []Limit `json:"limits"`
+}
+
 // LimitPage is a single page of Limit results.
 type LimitPage struct {
 	pagination.LinkedPageBase
@@ -63,9 +67,7 @@ func (r LimitPage) NextPageURL() (string, error) {
 // ExtractLimits returns a slice of Limits contained in a single page of
 // results.
 func ExtractLimits(r pagination.Page) ([]Limit, error) {
-	var s struct {
-		Limits []Limit `json:"limits"`
-	}
-	err := (r.(LimitPage)).ExtractInto(&s)
-	return s.Limits, err
+	var out LimitsOutput
+	err := (r.(LimitPage)).ExtractInto(&out)
+	return out.Limits, err
 }
