@@ -1,6 +1,7 @@
 package limits
 
 import (
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -34,8 +35,40 @@ type Limit struct {
 	Links map[string]interface{} `json:"links"`
 }
 
+type LimitOutput struct {
+	Limit *Limit `json:"limit"`
+}
+
 type LimitsOutput struct {
 	Limits []Limit `json:"limits"`
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Limits.
+type CreateResult struct {
+	gophercloud.Result
+}
+
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as a Limit.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult is the result of an Update request. Call its Extract method to
+// interpret it as a Limit.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }
 
 // LimitPage is a single page of Limit results.
@@ -69,5 +102,19 @@ func (r LimitPage) NextPageURL() (string, error) {
 func ExtractLimits(r pagination.Page) ([]Limit, error) {
 	var out LimitsOutput
 	err := (r.(LimitPage)).ExtractInto(&out)
+	return out.Limits, err
+}
+
+// Extract interprets any commonResult as a Limit.
+func (r commonResult) Extract() (*Limit, error) {
+	var out LimitOutput
+	err := r.ExtractInto(&out)
+	return out.Limit, err
+}
+
+// Extract interprets CreateResult as Limits.
+func (r CreateResult) Extract() ([]Limit, error) {
+	var out LimitsOutput
+	err := r.ExtractInto(&out)
 	return out.Limits, err
 }

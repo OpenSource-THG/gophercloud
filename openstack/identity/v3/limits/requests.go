@@ -49,3 +49,114 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return LimitPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToLimitsCreateMap() (map[string]interface{}, error)
+}
+
+type CreateOpts struct {
+	// RegionID is the ID of the region where the limit is applied.
+	RegionID string `json:"region_id,omitempty"`
+
+	// ProjectID is the ID of the project where the limit is applied.
+	ProjectID string `json:"project_id,omitempty"`
+
+	// DomainID is the ID of the domain where the limit is applied.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// ServiceID is the ID of the service where the limit is applied.
+	ServiceID string `json:"service_id" required:"true"`
+
+	// Description of the limit.
+	Description string `json:"description,omitempty"`
+
+	// ResourceName is the name of the resource that the limit is applied to.
+	ResourceName string `json:"resource_name" required:"true"`
+
+	// ResourceLimit is the override limit.
+	ResourceLimit int `json:"resource_limit"`
+}
+
+// BatchCreateOpts provides options used to create limits.
+type BatchCreateOpts []CreateOpts
+
+// ToLimitsCreateMap formats a BatchCreateOpts into a create request.
+func (opts BatchCreateOpts) ToLimitsCreateMap() (map[string]interface{}, error) {
+	limits := make([]map[string]interface{}, len(opts))
+	for i, limit := range opts {
+		limitMap, err := limit.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		limits[i] = limitMap
+	}
+	return map[string]interface{}{"limits": limits}, nil
+}
+
+func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Create creates new Limits.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToLimitsCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(rootURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToLimitUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents parameters to update a domain.
+type UpdateOpts struct {
+	// Description of the limit.
+	Description *string `json:"description,omitempty"`
+
+	// ResourceLimit is the override limit.
+	ResourceLimit *int `json:"resource_limit,omitempty"`
+}
+
+// ToLimitUpdateMap formats UpdateOpts into an update request.
+func (opts UpdateOpts) ToLimitUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "limit")
+}
+
+// Update modifies the attributes of a limit.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToLimitUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Patch(resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Get retrieves details on a single limit, by ID.
+func Get(client *gophercloud.ServiceClient, limitID string) (r GetResult) {
+	resp, err := client.Get(resourceURL(client, limitID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Delete deletes a limit.
+func Delete(client *gophercloud.ServiceClient, limitID string) (r DeleteResult) {
+	resp, err := client.Delete(resourceURL(client, limitID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
