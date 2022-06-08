@@ -37,7 +37,7 @@ func (opts ListOpts) ToLimitListQuery() (string, error) {
 
 // List enumerates the limits.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	url := listURL(client)
+	url := rootURL(client)
 	if opts != nil {
 		query, err := opts.ToLimitListQuery()
 		if err != nil {
