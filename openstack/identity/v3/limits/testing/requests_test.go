@@ -40,3 +40,66 @@ func TestListLimitsAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
 }
+
+func TestGetLimit(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetLimitSuccessfully(t)
+
+	actual, err := limits.Get(client.ServiceClient(), "25a04c7a065c430590881c646cdcdd58").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FirstLimit, *actual)
+}
+
+func TestCreateLimits(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateLimitSuccessfully(t)
+
+	createOpts := limits.BatchCreateOpts{
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
+			RegionID:      "RegionOne",
+			ResourceName:  "snapshot",
+			ResourceLimit: 5,
+		},
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			DomainID:      "edbafc92be354ffa977c58aa79c7bdb2",
+			ResourceName:  "volume",
+			ResourceLimit: 10,
+			Description:   "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce",
+		},
+	}
+
+	actual, err := limits.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
+}
+
+func TestDeleteLimit(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteLimitSuccessfully(t)
+
+	res := limits.Delete(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdateLimit(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateLimitSuccessfully(t)
+
+	var description = "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+	var resourceLimit = 5
+	updateOpts := limits.UpdateOpts{
+		Description:   &description,
+		ResourceLimit: &resourceLimit,
+	}
+
+	actual, err := limits.Update(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondLimitUpdated, *actual)
+}
