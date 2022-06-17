@@ -17,5 +17,53 @@ Example to List Limits
 	if err != nil {
 		panic(err)
 	}
+
+Example to Create a Limit
+
+	createOpts := limits.BatchCreateOpts{
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
+			RegionID:      "RegionOne",
+			ResourceName:  "snapshot",
+			ResourceLimit: 5,
+		},
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			DomainID:      "edbafc92be354ffa977c58aa79c7bdb2",
+			ResourceName:  "volume",
+			ResourceLimit: 10,
+			Description:   "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce",
+		},
+	}
+
+	createdLimits, err := limits.Create(identityClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Update a Limit
+
+	limitID := "0fe36e73809d46aeae6705c39077b1b3"
+
+	var description = "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+	var resourceLimit = 5
+	updateOpts := limits.UpdateOpts{
+		Description:   &description,
+		ResourceLimit: &resourceLimit,
+	}
+
+	limit, err := limits.Update(identityClient, limitID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Delete a Limit
+
+	limitID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := limits.Delete(identityClient, limitID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package limits
