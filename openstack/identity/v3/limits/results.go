@@ -112,7 +112,7 @@ func (r commonResult) Extract() (*Limit, error) {
 	return out.Limit, err
 }
 
-// Extract interprets CreateResult as Limits.
+// Extract interprets CreateResult as slice of Limits.
 func (r CreateResult) Extract() ([]Limit, error) {
 	var out LimitsOutput
 	err := r.ExtractInto(&out)
