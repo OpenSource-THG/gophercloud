@@ -18,7 +18,7 @@ Example to List Limits
 		panic(err)
 	}
 
-Example to Create a Limit
+Example to Create Limits
 
 	createOpts := limits.BatchCreateOpts{
 		limits.CreateOpts{

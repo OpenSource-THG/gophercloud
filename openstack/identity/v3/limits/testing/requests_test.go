@@ -73,7 +73,7 @@ func TestCreateLimits(t *testing.T) {
 		},
 	}
 
-	actual, err := limits.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := limits.BatchCreate(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
 }
