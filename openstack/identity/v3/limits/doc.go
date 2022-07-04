@@ -20,7 +20,7 @@ Example to List Limits
 
 Example to Create Limits
 
-	createOpts := limits.BatchCreateOpts{
+	batchCreateOpts := limits.BatchCreateOpts{
 		limits.CreateOpts{
 			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
 			ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
@@ -37,7 +37,7 @@ Example to Create Limits
 		},
 	}
 
-	createdLimits, err := limits.Create(identityClient, createOpts).Extract()
+	createdLimits, err := limits.Create(identityClient, batchCreateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
