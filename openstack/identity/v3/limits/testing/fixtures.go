@@ -63,7 +63,7 @@ const CreateRequest = `
             "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
             "domain_id": "edbafc92be354ffa977c58aa79c7bdb2",
             "resource_name": "volume",
-            "resource_limit": 10,
+            "resource_limit": 11,
             "description": "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce"
         }
     ]
