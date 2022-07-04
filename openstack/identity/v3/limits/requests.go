@@ -50,7 +50,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// CreateOptsBuilder allows extensions to add additional parameters to
+// BatchCreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type BatchCreateOptsBuilder interface {
 	ToLimitsCreateMap() (map[string]interface{}, error)
