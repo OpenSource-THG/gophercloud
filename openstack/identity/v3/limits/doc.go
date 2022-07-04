@@ -46,8 +46,8 @@ Example to Update a Limit
 
 	limitID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	var description = "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
-	var resourceLimit = 5
+  description := "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+  resourceLimit := 5
 	updateOpts := limits.UpdateOpts{
 		Description:   &description,
 		ResourceLimit: &resourceLimit,
